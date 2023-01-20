@@ -1,6 +1,3 @@
-import Message from './message-class';
-import Conversation from './conversation-classe';
-
 const Tchat = class Tchat {
   renderHeader() {
     return `
@@ -9,7 +6,7 @@ const Tchat = class Tchat {
           <div class="container-fluid">
             <span class="navbar-brand mb-0 h1">
             <span class="text-danger">
-              <strong>MARVEL</strong>
+              <strong>God</strong>
             </span> / 
             <span class="text-primary">Chatbot</span>
             </span>
@@ -69,8 +66,6 @@ const Tchat = class Tchat {
   }
 
   renderMyMessage(me, message) {
-    console.log('eeeeeeeeeeeeeee');
-    console.log(me.name);
     return `
     <div class="row mt-2">
         <div class="col-6"></div>
@@ -106,15 +101,36 @@ const Tchat = class Tchat {
     `;
   }
 
-  sendMessage(textBox, messages, bots) {
-    messages.setConversation(new Message(textBox.value, 'Me', Date.now));
-    this.run(bots);
+  botsAnswer(bots, message, conversation) {
+    bots.forEach((bot) => {
+      bot.answer(message, this.updateBotAnswer, conversation, bots, this);
+    });
+  }
+
+  updateBotAnswer(conversation, texte, nom, bots, chat) {
+    conversation.addMessage({
+      text: texte,
+      name: nom,
+      date: new Date(Date.now()).toLocaleDateString()
+    });
+    bots.forEach((bot) => {
+      bot.setNbMessage(conversation);
+    });
+    chat.run(bots, conversation);
+  }
+
+  sendMessage(textBox, conversation, bots) {
+    conversation.addMessage({
+      text: textBox.value, name: 'Me', date: new Date(Date.now()).toLocaleDateString()
+    });
+    this.botsAnswer(bots, textBox.value, conversation);
+    this.run(bots, conversation);
   }
 
   renderChat(bots, messages) {
     let display = '';
     messages.forEach((message) => {
-        display += this.renderMessage(bots.find((bot) => bot.name === message.botName), message);
+        display += this.renderMessage(bots.find((bot) => bot.name === message.name), message);
     });
     return display + this.renderSender();
   }
@@ -131,13 +147,11 @@ const Tchat = class Tchat {
     `;
   }
 
-  run(bots) {
-    const messages = new Conversation();
-    console.log(messages);
-    document.body.innerHTML = this.render(bots, messages.conversation);
+  run(bots, conversation) {
+    document.body.innerHTML = this.render(bots, conversation.getConversation());
     const button = document.getElementById('senderButton');
     const textBox = document.getElementById('senderText');
-    button.addEventListener('click', () => this.sendMessage(textBox, messages, bots));
+    button.addEventListener('click', () => this.sendMessage(textBox, conversation, bots));
   }
 };
 
