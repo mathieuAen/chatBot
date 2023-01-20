@@ -108,10 +108,11 @@ const Tchat = class Tchat {
   }
 
   updateBotAnswer(conversation, texte, nom, bots, chat) {
+    const date = new Date(Date.now());
     conversation.addMessage({
       text: texte,
       name: nom,
-      date: new Date(Date.now()).toLocaleDateString()
+      date: `${date.getHours()}:${date.getMinutes()}`
     });
     bots.forEach((bot) => {
       bot.setNbMessage(conversation);
@@ -120,8 +121,9 @@ const Tchat = class Tchat {
   }
 
   sendMessage(textBox, conversation, bots) {
+    const date = new Date(Date.now());
     conversation.addMessage({
-      text: textBox.value, name: 'Me', date: new Date(Date.now()).toLocaleDateString()
+      text: textBox.value, name: 'Me', date: `${date.getHours()}:${date.getMinutes()}`
     });
     this.botsAnswer(bots, textBox.value, conversation);
     this.run(bots, conversation);
@@ -152,7 +154,14 @@ const Tchat = class Tchat {
     const button = document.getElementById('senderButton');
     const textBox = document.getElementById('senderText');
     button.addEventListener('click', () => this.sendMessage(textBox, conversation, bots));
+    textBox.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        this.sendMessage(textBox, conversation, bots);
+      }
+    });
+    window.scrollTo(0, document.body.scrollHeight);
   }
+
 };
 
 export default Tchat;

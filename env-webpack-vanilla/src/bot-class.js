@@ -18,6 +18,10 @@ const Bot = class Bot {
     return this[message.toLowerCase()](callback, conversation, bots, chat);
   }
 
+  help(callback, conversation, bots, chat) {
+    callback(conversation, 'Ah oui c\'est vrai les sujets de conversation apprécié des dieux sont: "Bonjour", "Bye", "Situation", "Nez", "Qui", "Cat", "Bien"', this.name, bots, chat);
+  }
+
   bonjour(callback, conversation, bots, chat) {
     callback(conversation, 'Bonjour', this.name, bots, chat);
   }
